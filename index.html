@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-color: rgb(215, 255, 254);
+}
+#contentFrame {
+  width: 100%;
+  height: 100vh;
+  border: none;
+  display: none; /* awalnya disembunyiin */
+}
+.bg_heart {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.heart {
+  position: absolute;
+  top: -50%;
+  transform: rotate(-45deg);
+}
+
+.heart:before,
+.heart:after {
+  position: absolute;
+  display: block;
+  content: "";
+  width: 100%;
+  height: 100%;
+  background: inherit;
+  border-radius: 100%;
+}
+
+.heart:before {
+  top: -50%;
+  left: 0;
+}
+
+.heart:after {
+  top: 0;
+  right: -50%;
+}
+
+@keyframes love {
+  0% {
+      top: 110%;
+  }
+}
+
+.message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgb(251, 85, 234);
+  font-size: 2em;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  width: 80%;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0);
+  border-radius: 15px;
+  pointer-events: none;
+}
+@media (max-width: 600px) {
+  .message {
+    font-size: 1.5em; 
+    padding: 10px; 
+  }
+}
+
+@media (min-width: 601px) and (max-width: 1024px) {
+  .message {
+    font-size: 2.0em;
+    padding: 15px;
+  }
+}
+
+@media (min-width: 1025px) {
+  .message {
+    font-size: 3em; 
+    padding: 20px; 
+  }
+}
+    </style>
+</head>
+<body>
+    <div class="wallpaper"></div>
+    <div class="content"></div>
+
+    <div class="bg_heart">
+        <div class="message"></div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <audio id="music" autoplay loop>
+    <source src="ucapan dinda-alya (online-audio-converter.com).mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const music = document.getElementById("music");
+
+    // Kalau ada posisi tersimpan, mulai dari situ
+    music.addEventListener("loadedmetadata", () => {
+      const savedTime = localStorage.getItem("musicTime");
+      if (savedTime) {
+        music.currentTime = parseFloat(savedTime);
+      }
+    });
+
+    // Simpan posisi sebelum keluar halaman
+    window.addEventListener("beforeunload", () => {
+      localStorage.setItem("musicTime", music.currentTime);
+    });
+    // play di mana aja
+    document.addEventListener("click", () => {
+      if (music.paused) music.play().catch(err => console.log("Autoplay diblok:", err));
+    });
+  </script>
+    <script>
+        document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+});
+
+document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C')) {
+        e.preventDefault();
+    }
+});
+//isi ucapan sebanyak banyaknya,
+//cara tulis= "text",
+const messages = [
+  "Happy birthday Alya",
+  "you have reached an age that can be called adulthood",
+  "that means you will face the real test of life",
+  "keep up the spirit",
+  "don't give up easily and complain",
+  "face all obstacles with prayer and patience",
+];
+
+let currentPage = 0;
+let isLastPage = false;
+
+function showMessage() {
+    $('.message').text(messages[currentPage]);
+    
+    isLastPage = currentPage === messages.length - 1;
+    
+    if (isLastPage) {
+        $('.next-button').show();
+        $('.bg_heart').css('cursor', 'default');
+    } else {
+        $('.next-button').hide();
+        $('.bg_heart').css('cursor', 'pointer');
+    }
+}
+
+$('.bg_heart').on('click', function() {
+    if (!isLastPage) {
+        currentPage++;
+        showMessage();
+    }
+});
+showMessage();
+
+function clearMusicState() {
+    localStorage.removeItem('musicPlaying');
+    localStorage.removeItem('musicCurrentTime');
+}
+
+window.onload = function() {
+    clearMusicState(); 
+}
+
+function setupMusic() {
+    const music = document.getElementById('backgroundMusic');
+    
+    if (!localStorage.getItem('initialLoad')) {
+        clearMusicState();
+        localStorage.setItem('initialLoad', 'true');
+        music.currentTime = 0;
+    }
+
+    const isMusicPlaying = localStorage.getItem('musicPlaying') === 'true';
+    const musicCurrentTime = localStorage.getItem('musicCurrentTime') || 0;
+
+    if (isMusicPlaying) {
+        music.currentTime = parseFloat(musicCurrentTime);
+        music.play().catch(error => console.log('Playback failed', error));
+    }
+
+    music.addEventListener('play', () => {
+        localStorage.setItem('musicPlaying', 'true');
+    });
+
+    music.addEventListener('pause', () => {
+        localStorage.setItem('musicPlaying', 'false');
+    });
+
+    setInterval(() => {
+        localStorage.setItem('musicCurrentTime', music.currentTime);
+    }, 1000);
+
+    document.addEventListener('click', function startMusic() {
+        music.play().catch(error => {
+            console.log('Autoplay prevented', error);
+        });
+        document.removeEventListener('click', startMusic);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', setupMusic);
+    </script>
+</body>
+</html>
