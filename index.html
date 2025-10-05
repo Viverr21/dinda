@@ -60,44 +60,35 @@ const messages = [
 
 let currentPage = 0;
 const messageEl = document.querySelector('.message');
+let intervalId;
 
 function showMessage() {
   messageEl.textContent = messages[currentPage];
 }
 
 function startMessages() {
+  currentPage = 0; // mulai dari awal
   showMessage();
-  setInterval(() => {
+  intervalId = setInterval(() => {
     currentPage++;
     if (currentPage >= messages.length) currentPage = 0;
     showMessage();
   }, 3000); // ganti tiap 3 detik
 }
 
-window.addEventListener("load", startMessages);
-
 // ===================
-// Musik
+// Musik + Sinkron
 // ===================
 const music = document.getElementById("music");
 
-// mulai dari posisi tersimpan
-music.addEventListener("loadedmetadata", () => {
-  const savedTime = localStorage.getItem("musicTime");
-  if (savedTime) {
-    music.currentTime = parseFloat(savedTime);
-  }
-});
-
-// simpan posisi sebelum keluar
-window.addEventListener("beforeunload", () => {
-  localStorage.setItem("musicTime", music.currentTime);
-});
-
-// user klik = play musik (atasi autoplay block)
 document.addEventListener("click", () => {
-  if (music.paused) music.play().catch(err => console.log("Autoplay diblok:", err));
-});
+  // play musik sekali
+  if (music.paused) {
+    music.currentTime = 0; // selalu mulai dari awal
+    music.play().catch(err => console.log("Autoplay diblok:", err));
+    startMessages(); // mulai text barengan
+  }
+}, { once: true }); // cuma sekali trigger
 </script>
 
 </body>
