@@ -17,7 +17,7 @@ html, body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: rgb(251, 85, 234);
+  color: mediumorchid;
   font-size: 2em;
   text-align: center;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
@@ -34,21 +34,54 @@ html, body {
 @media (min-width: 1025px) {
   .message { font-size: 3em; }
 }
+#mainContent {
+  padding: 50px;
+}
+/* overlay kunci */
+#lockOverlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.95);
+  color: magenta;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
   </style>
 </head>
 <body>
-
   <div class="message"></div>
-
   <!-- musik -->
   <audio id="music" loop>
     <source src="ucapan dinda-alya (online-audio-converter.com).mp3" type="audio/mpeg">
   </audio>
+  <div id="lockOverlay">
+    <p>buru buru banget pencet website nya</p>
+    <p>tunggu hari besok yaa cintaa😜🫰</p>
+  </div>
+
+  <script>
+    const startDate = new Date("2025-10-06T00:00:00");
+
+    function checkAccess() {
+      const now = new Date();
+      
+
+      if (now >= startDate) {
+        // kalau sudah waktunya → hilangkan overlay
+        document.getElementById("lockOverlay").style.display = "none";
+      }
+    }
+
+    // cek saat load + update tiap 1 detik biar realtime
+    checkAccess();
+    setInterval(checkAccess, 1000);
+  </script>
 
 <script>
-// ===================
-// Pesan otomatis
-// ===================
 const messages = [
   "Happy birthday Alya",
   "you have reached an age that can be called adulthood",
@@ -57,15 +90,12 @@ const messages = [
   "don't give up easily and complain",
   "face all obstacles with prayer and patience",
 ];
-
 let currentPage = 0;
 const messageEl = document.querySelector('.message');
 let intervalId;
-
 function showMessage() {
   messageEl.textContent = messages[currentPage];
 }
-
 function startMessages() {
   currentPage = 0; // mulai dari awal
   showMessage();
@@ -75,14 +105,8 @@ function startMessages() {
     showMessage();
   }, 3000); // ganti tiap 3 detik
 }
-
-// ===================
-// Musik + Sinkron
-// ===================
 const music = document.getElementById("music");
-
 document.addEventListener("click", () => {
-  // play musik sekali
   if (music.paused) {
     music.currentTime = 0; // selalu mulai dari awal
     music.play().catch(err => console.log("Autoplay diblok:", err));
@@ -90,6 +114,5 @@ document.addEventListener("click", () => {
   }
 }, { once: true }); // cuma sekali trigger
 </script>
-
 </body>
 </html>
